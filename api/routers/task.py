@@ -19,7 +19,7 @@ async def create_task(task_body: task_schema.TaskCreate, db: Session = Depends(g
 @router.put("/tasks/{task_id}", response_model=task_schema.TaskCreateResponse)
 async def update_task(task_id: int, task_body: task_schema.TaskCreate, db: Session = Depends(get_db)):
 
-    # task_id를 통해 조회해서 task에 저장
+    # task_id를 통해 조회
     original = task_crud.get_task(db, task_id=task_id)
 
     # 없는 경우 예외처리
@@ -30,6 +30,12 @@ async def update_task(task_id: int, task_body: task_schema.TaskCreate, db: Sessi
     return task_crud.update_task(db, task_body, original=original)
     
 
-@router.delete("/tasks/{task_id}")
-async def delete_task(task_id: int):
-    return
+@router.delete("/tasks/{task_id}", response_model=None)
+async def delete_task(task_id: int, db: Session = Depends(get_db)):
+
+    original = task_crud.get_task(db, task_id=task_id)
+
+    if original is None:
+        raise HTTPException(status_code=404, detail="Task not found")
+    
+    return task_crud.delete_task(db, original)
