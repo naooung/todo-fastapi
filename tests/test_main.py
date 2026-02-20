@@ -39,3 +39,25 @@ async def async_client() -> AsyncClient:
     async with AsyncClient(app=app, base_url="http://test") as client:
         yield client
 
+@pytest.mark.asyncio
+async def test_create_and_read(async_client):
+
+    # Task 생성 요청
+    response = await async_client.post("/tasks", json={"title": "테스트 작업"})
+    assert response.status_code == starlette.status.HTTP_200_OK
+
+    # 생성된 Task 응답 데이터 검증
+    response_obj = response.json()
+    assert response_obj["title"] == "테스트 작업"
+
+    # 전체 Task 조회 요청
+    response = await async_client.get("/tasks")
+    assert response.status_code == starlette.status.HTTP_200_OK
+
+    # DB에 실제로 저장되었는지 검증
+    response_obj = response.json()
+    assert len(response_obj) == 1
+    assert response_obj[0]["title"] == "테스트 작업"
+
+    # Done 기본 상태가 False인지 확인
+    assert response_obj[0]["done"] is False
