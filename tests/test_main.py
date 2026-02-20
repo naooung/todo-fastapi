@@ -61,3 +61,24 @@ async def test_create_and_read(async_client):
 
     # Done 기본 상태가 False인지 확인
     assert response_obj[0]["done"] is False
+
+@pytest.mark.asyncio
+async def test_done_flag(async_client):
+    respone = await async_client.post("/tasks", json={"title": "테스트 작업2"})
+    assert response.status_code == starlette.status.HTTP_200_OK
+
+    # 완료 플래그 설정
+    response = await async_client.put("/tasks/1/done")
+    assert response.status_code == starlette.status.HTTP_200_OK
+
+    # 이미 완료 플래그가 설정된 경우 - 400
+    response = await async_client.put("/tasks/1/done")
+    assert response.status_code == starlette.status.HTTP_400_BAD_REQUEST
+
+    # 완료 플래그 해제
+    response = await async_client.delete("/tasks/1/done")
+    assert response.status_code == starlette.status.HTTP_200_OK
+
+    # 이미 완료 플래그가 해제된 경우 - 404
+    response = await async_client.delete("/tasks/1/done")
+    assert response.status_code == starlette.status.HTTP_404_NOT_FOUND
