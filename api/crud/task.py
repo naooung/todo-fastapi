@@ -8,7 +8,7 @@ import api.schemas.task as task_schema
 async def create_task(
         db: AsyncSession, task_create: task_schema.TaskCreate
     ) -> task_model.Task:
-    task = task_model.Task(**task_create.dict())
+    task = task_model.Task(**task_create.model_dump())
     db.add(task)
     await db.commit()
     await db.refresh(task)
@@ -42,6 +42,7 @@ async def update_task(
     return original
 
 async def delete_task(db: AsyncSession, original: task_model.Task) -> None:
-    await db.delete(original)
+    # delete는 세션 내부 상태만 변경하므로 await 불가
+    db.delete(original)
     await db.commit()
 
