@@ -8,14 +8,14 @@ router = APIRouter()
 async def list_tasks():
     return [task_schema.Task(id=1, title="첫 번째 Todo 작업")]
 
-@router.post("/tasks")
-async def create_task():
-    pass
+@router.post("/tasks", response_model=task_schema.TaskCreateResponse)
+async def create_task(task: task_schema.TaskCreate):
+    return task_schema.TaskCreateResponse(id=1, **task.model_dump())
 
-@router.put("/tasks/{task_id}")
-async def update_task():
-    pass
+@router.put("/tasks/{task_id}", response_model=task_schema.TaskCreateResponse)
+async def update_task(task_body: task_schema.TaskCreate):
+    return task_schema.TaskCreateResponse(id=1, **task_body.model_dump())
 
 @router.delete("/tasks/{task_id}")
-async def delete_task():
-    pass
+async def delete_task(task_id: int):
+    return
