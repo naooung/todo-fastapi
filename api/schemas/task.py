@@ -1,9 +1,12 @@
+import datetime
 from pydantic import BaseModel, Field, ConfigDict
 
 class TaskBase(BaseModel):
     title: str | None = Field(
+    default=None, json_schema_extra={"example": "코딩 공부하기"},)
+    due_date: datetime.date | None = Field(
     default=None,
-    json_schema_extra={"example": "코딩 공부하기"},
+    json_schema_extra={"example": "2024-12-01"},
 )
 
 class Task(TaskBase):
