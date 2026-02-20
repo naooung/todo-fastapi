@@ -14,6 +14,10 @@ pymysql = "^1.1.2"
 aiomysql = "^0.3.2"
 
 
+[tool.poetry.group.pytest-asyncio.dependencies]
+aiosqlite = "^0.22.1"
+httpx = "^0.28.1"
+
 [build-system]
 requires = ["poetry-core"]
 build-backend = "poetry.core.masonry.api"
