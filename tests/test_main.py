@@ -2,7 +2,7 @@ import pytest
 import pytest_asyncio
 import starlette.status
 
-from httpx import AsyncClient
+from httpx import AsyncClient, ASGITransport
 from sqlalchemy.ext.asyncio import create_async_engine, AsyncSession
 from sqlalchemy.orm import sessionmaker
 
@@ -36,7 +36,8 @@ async def async_client() -> AsyncClient:
     app.dependency_overrides[get_db] = get_test_db
 
     # 테스트용 비동기 HTTP 클라이언트 반환
-    async with AsyncClient(app=app, base_url="http://test") as client:
+    transport = ASGITransport(app=app)
+    async with AsyncClient(transport=transport, base_url="http://test") as client:
         yield client
 
 @pytest.mark.asyncio
@@ -64,7 +65,7 @@ async def test_create_and_read(async_client):
 
 @pytest.mark.asyncio
 async def test_done_flag(async_client):
-    respone = await async_client.post("/tasks", json={"title": "테스트 작업2"})
+    response = await async_client.post("/tasks", json={"title": "테스트 작업2"})
     assert response.status_code == starlette.status.HTTP_200_OK
 
     # 완료 플래그 설정
