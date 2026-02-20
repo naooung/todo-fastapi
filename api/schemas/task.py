@@ -1,14 +1,17 @@
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, Field, ConfigDict
 
 class TaskBase(BaseModel):
-    title: str | None = Field(None, exmaple="코딩 공부하기")
+    title: str | None = Field(
+    default=None,
+    json_schema_extra={"example": "코딩 공부하기"},
+)
 
 class Task(TaskBase):
     id: int
     done: bool = Field(False, description="완료 플래그")
 
-    class Config:
-        orm_mode = True
+    model_config = ConfigDict(from_attributes=True)
+
 
 class TaskCreate(TaskBase):
     pass
@@ -16,5 +19,4 @@ class TaskCreate(TaskBase):
 class TaskCreateResponse(TaskCreate):
     id: int
 
-    class Config:
-        orm_mode = True
+    model_config = ConfigDict(from_attributes=True)
